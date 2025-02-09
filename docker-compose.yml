@@ -1,0 +1,29 @@
+version : "3.8"
+services:
+  frontend:
+    build: ./frontend
+    ports:
+    - 3000:3000
+
+  app:
+    build: ./dbserver
+    command: ./wait-for-postgres.sh db ./dbserver
+    ports:
+      - 8000:8080
+    depends_on:
+      - db
+    environment:
+      - DB_PASSWORD=Stacy
+
+  pingserver:
+  build: ./pingserver
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+    - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=Stacy
+    ports:
+      - 5436:5432
